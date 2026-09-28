@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chen ER Diagram Tool | Database Systems</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/viz.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/full.render.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --navy:#17324d; --blue:#2563eb; --teal:#0f766e; --light-teal:#e9f8f5;
+    --border:#d7dee8; --gray:#475569; --bg:#eef2f7; --dark:#172033;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--dark);background:var(--bg);line-height:1.55}
+  .page{max-width:1300px;margin:24px auto;background:white;box-shadow:0 8px 35px rgba(15,23,42,.10);border-radius:14px;overflow:hidden}
+
+  header{color:white;background:linear-gradient(135deg,#0f3d2e,#0f766e 55%,#2563eb);padding:42px 52px 38px;position:relative}
+  header:after{content:"ER";position:absolute;right:45px;top:28px;font-size:82px;font-weight:900;opacity:.08}
+  .course{font-size:14px;letter-spacing:2px;text-transform:uppercase;font-weight:700;opacity:.9}
+  h1{font-size:36px;line-height:1.15;margin:10px 0 12px}
+  .subtitle{font-size:19px;max-width:720px;color:#e4efff}
+  .meta{margin-top:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .meta div{background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.18);border-radius:9px;padding:10px 12px}
+  .meta small{display:block;opacity:.72;font-size:11px;text-transform:uppercase}
+  .meta strong{font-size:14px}
+
+  .banner{background:#0f172a;color:#f8fafc;padding:14px 52px;font-size:14px;font-weight:600;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center}
+  .banner a{color:#93c5fd;font-weight:800;text-decoration:none}
+  .banner a:hover{text-decoration:underline}
+  .banner span.dot{opacity:.45}
+
+  main{padding:30px 32px 44px}
+  h2{color:var(--navy);border-bottom:3px solid #dbeafe;padding-bottom:8px;margin:30px 0 16px;font-size:22px}
+  .wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:980px){.wrap{grid-template-columns:1fr}}
+  .panel{background:white;border:1px solid var(--border);border-radius:12px;padding:18px}
+  .panel h3{margin:0 0 10px;font-size:16px;color:var(--navy)}
+
+  select,textarea{width:100%;font-family:Consolas,Monaco,monospace;font-size:13px;padding:10px;border-radius:8px;border:1px solid var(--border)}
+  textarea{height:300px;background:#0f172a;color:#e2e8f0;resize:vertical}
+  select{background:white;color:var(--dark);font-family:Inter,Arial,sans-serif}
+
+  .btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  button{cursor:pointer;border:none;border-radius:8px;padding:9px 14px;font-weight:700;font-size:13px}
+  .btn-primary{background:var(--teal);color:white}
+  .btn-primary:hover{background:#0d5f58}
+  .btn-secondary{background:#eef2f7;color:#172033;border:1px solid var(--border)}
+  .btn-secondary:hover{background:#e2e8f0}
+
+  #svgContainer{min-height:300px;border:1px dashed #94a3b8;border-radius:8px;background:#f8fafc;display:flex;align-items:center;justify-content:center;overflow:auto;padding:8px}
+  #svgContainer svg{max-width:100%;height:auto}
+  .note{font-size:12.5px;color:var(--gray);margin-top:10px}
+  .status{font-size:12.5px;margin-top:8px;min-height:16px}
+  .status.ok{color:#166534;font-weight:700}
+  .status.err{color:#b91c1c;font-weight:700}
+  .error{color:#b91c1c;font-weight:700;padding:10px}
+
+  .palette-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+  .palette-option{display:flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12.5px;font-weight:700}
+  .palette-option input{margin:0}
+  .swatch{display:inline-flex;gap:2px}
+  .swatch span{width:12px;height:12px;border-radius:3px;display:inline-block;border:1px solid rgba(0,0,0,.15)}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+  th,td{border:1px solid var(--border);padding:6px 8px;text-align:left;vertical-align:middle}
+  th{background:var(--navy);color:white}
+  code{background:#eef2f7;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace;font-size:.9em}
+  .symcell{display:flex;align-items:center;justify-content:center}
+
+  .ref{font-size:12px;color:#475569;background:#f8fafc;border-top:1px solid var(--border);padding:14px 16px;margin-top:25px}
+  .footer{background:#0f172a;color:#cbd5e1;padding:22px 52px;font-size:12px}
+  .footer strong{color:white}
+  a{color:#1d4ed8}
+  @media(max-width:720px){header,main,.footer,.banner{padding-left:22px;padding-right:22px}.meta{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="course">College of Electrical Engineering and Computer Science</div>
+  <h1>Chen ER Diagram<br>Tool</h1>
+  <div class="subtitle">Describe your diagram in a few lines of text, click Compile, and save a Chen-notation ER diagram. Built for Database Systems Homework 1.</div>
+  <div class="meta">
+    <div><small>Code</small><strong>IC3011301</strong></div>
+    <div><small>Semester</small><strong>FALL 2026</strong></div>
+    <div><small>Notation</small><strong>Chen (Elmasri &amp; Navathe)</strong></div>
+    <div><small>Instructor</small><strong>Jyoti Prakash Sahoo</strong></div>
+  </div>
+</header>
+
+<div class="banner">
+  <span>🔗 <a href="DB_HW1_Databases_Fall2026.html">Back to the homework</a></span>
+  <span class="dot">•</span>
+  <span>© 2026 Jyoti Prakash Sahoo — IICT Database Systems Course</span>
+</div>
+
+<main>
+
+  <div class="panel" style="margin-bottom:20px;background:#f8fafc">
+    <h3>What is "ER description code"? (and what does DSL mean?)</h3>
+    <p style="margin:6px 0">In this tool you do not drag and drop shapes. You type one short line for each item in your diagram. For example, the line <code>entity Student</code> tells the tool to draw a rectangle named Student. When you click <strong>Compile</strong>, the tool draws the whole diagram from your lines.</p>
+    <p style="margin:6px 0">These lines are written in a small text language. A language built for one specific job is called a <strong>DSL</strong>, which stands for <strong>Domain-Specific Language</strong>. "Domain" means the subject area (here, ER diagrams) and "specific" means the language only does that one job. SQL is another example: it is a DSL for working with databases. On this page we simply call it <em>ER description code</em>. Every line you can write is listed in section 4, and section 3 shows the symbol each line produces.</p>
+  </div>
+
+  <h2>0 · Pick a color theme &amp; load a book example</h2>
+  <div class="panel">
+    <h3>Color theme (qualitative palettes, matplotlib-style)</h3>
+    <div class="palette-row" id="paletteRow"></div>
+    <p class="note">Colors are a visual aid only — they are not part of the Chen notation itself (the textbook's diagrams are plain black-and-white). Changing the theme rewrites the <code>#colors</code> lines at the top of your code and draws the diagram again.</p>
+
+    <h3 style="margin-top:18px">Load a worked example</h3>
+    <div class="btnrow" style="margin-top:0">
+      <select id="exampleSelect">
+        <option value="employee">Employee &amp; Dependent — COMPANY database, Sec 3.2–3.5 (weak entity + identifying relationship)</option>
+        <option value="student">Student — University database, Sec 3.10 (composite attribute)</option>
+        <option value="customer">Customer — generic illustrative example, not from Ch.1–3 (multivalued + derived attribute)</option>
+      </select>
+      <button class="btn-secondary" id="loadExampleBtn">Load into editor</button>
+    </div>
+    <p class="note">The Employee/Dependent and Student examples use the exact entities and attributes described in the textbook. The Customer example is included only to demonstrate multivalued and derived attributes together — it is not from Chapters 1–3.</p>
+  </div>
+
+  <div class="wrap" style="margin-top:20px">
+
+    <div class="panel">
+      <h3>1 · Write your ER description code</h3>
+      <textarea id="dslInput"></textarea>
+      <div class="btnrow">
+        <button class="btn-primary" id="compileBtn">▶ Compile</button>
+        <button class="btn-secondary" id="loadSkeletonBtn">Load Taiwan Tech starter (for Q13)</button>
+      </div>
+      <div id="status" class="status"></div>
+    </div>
+
+    <div class="panel">
+      <h3>2 · Rendered diagram</h3>
+      <div id="svgContainer"><span style="color:#94a3b8">Click Compile to render your diagram…</span></div>
+      <div class="btnrow">
+        <button class="btn-secondary" id="downloadSvgBtn">⬇ SVG</button>
+        <button class="btn-secondary" id="downloadPngBtn">⬇ PNG</button>
+        <button class="btn-secondary" id="downloadJpgBtn">⬇ JPG</button>
+        <button class="btn-secondary" id="downloadPdfBtn">⬇ PDF</button>
+      </div>
+      <p class="note">Exports use the most recently compiled diagram. This tool needs an internet connection (it loads its drawing library from the internet). If nothing is drawn, check your connection and refresh the page.</p>
+    </div>
+
+  </div>
+
+  <h2>3 · Notation reference — Figure 3.14 (Elmasri &amp; Navathe)</h2>
+  <div class="panel">
+    <table id="nodeNotationTable">
+      <tr><th style="width:110px">Symbol</th><th>Meaning</th><th>Line to type</th></tr>
+      <tr data-sym="entity"><td class="symcell"></td><td>Entity type</td><td><code>entity Name</code></td></tr>
+      <tr data-sym="weak"><td class="symcell"></td><td>Weak entity type</td><td><code>weak entity Name</code></td></tr>
+      <tr data-sym="relationship"><td class="symcell"></td><td>Relationship type</td><td><code>relationship Name</code></td></tr>
+      <tr data-sym="identifying"><td class="symcell"></td><td>Identifying relationship type</td><td><code>identifying relationship Name</code></td></tr>
+      <tr data-sym="attribute"><td class="symcell"></td><td>Attribute</td><td><code>attribute Owner Name</code></td></tr>
+      <tr data-sym="key"><td class="symcell"></td><td>Key attribute (underlined)</td><td><code>attribute Owner Name PK</code></td></tr>
+      <tr data-sym="multi"><td class="symcell"></td><td>Multivalued attribute</td><td><code>attribute Owner Name MULTI</code></td></tr>
+      <tr data-sym="derived"><td class="symcell"></td><td>Derived attribute (dashed)</td><td><code>attribute Owner Name DERIVED</code></td></tr>
+      <tr data-sym="composite"><td class="symcell"></td><td>Composite attribute</td><td><code>composite Owner Name { part1, part2 }</code></td></tr>
+      <tr data-sym="total"><td class="symcell"></td><td>Total participation of E in R (double line)</td><td><code>... (1) TOTAL -- ...</code></td></tr>
+      <tr data-sym="partial"><td class="symcell"></td><td>Partial participation of E in R (single line)</td><td><code>... (1) PARTIAL -- ...</code></td></tr>
+      <tr data-sym="cardinality"><td class="symcell"></td><td>Cardinality ratio label (1, N, or M)</td><td><code>(1)</code>, <code>(N)</code>, <code>(M)</code></td></tr>
+    </table>
+    <p class="note"><strong>Not drawn by this tool:</strong> Figure 3.14 also shows the alternative <strong>(min,max)</strong> structural-constraint notation. This tool only draws the cardinality ratio (1, N, M) with total or partial participation, as shown above. That is the style Q13 asks for. Use the (min,max) notation directly in your written answer for Q11 — it doesn't need the diagramming tool.</p>
+  </div>
+
+  <h2>4 · All the line types you can write</h2>
+  <div class="panel">
+    <table>
+      <tr><th>Line</th><th>Meaning</th></tr>
+      <tr><td><code># comment</code></td><td>Ignored — use for notes</td></tr>
+      <tr><td><code>entities: #hex</code></td><td>Sets the fill color for entities (also set by the theme picker above)</td></tr>
+      <tr><td><code>weak_entities: #hex</code></td><td>Sets the fill color for weak entities</td></tr>
+      <tr><td><code>relationships: #hex</code></td><td>Sets the fill color for relationships</td></tr>
+      <tr><td><code>Rel From (1|N|M) TOTAL|PARTIAL -- (1|N|M) TOTAL|PARTIAL To</code></td><td>Connects a relationship to its two entities, with cardinality &amp; participation on each side</td></tr>
+    </table>
+    <p class="note"><strong>Naming rule:</strong> entity/relationship/attribute names must be a single word — no spaces (use underscores, e.g. <code>Date_of_Birth</code>). Every name you invent in <code>entity</code>/<code>weak entity</code>/<code>relationship</code> lines must be spelled identically everywhere else you reference it.</p>
+    <p class="note"><strong>One notation simplification:</strong> the textbook draws a weak entity's <em>partial key</em> with a <em>dashed</em> underline (to distinguish it from a full key). This tool only has one "key" style (<code>PK</code>, solid underline) — mark a weak entity's partial key with <code>PK</code> too and note in your answer that it is a partial key, not a full key.</p>
+  </div>
+
+  <div class="ref">
+    The way this tool reads your text is adapted from the open-source <em>chen-er-generator</em> project (github.com/AhmWael/chen-er-generator). The drawing itself is done by Graphviz, a free diagram-drawing program, running inside your browser through the viz.js library. Notation follows Figure 3.14, <em>Fundamentals of Database Systems</em> by Ramez Elmasri and Shamkant B. Navathe.
+  </div>
+
+</main>
+
+<div class="footer">
+  <strong>© 2026 Jyoti Prakash Sahoo</strong> — IICT Database Systems Course · Chen ER Diagram Tool · For educational use with Homework 1.
+</div>
+
+</div>
+
+<script>
+// ================================
+// Chen ER description-code reader → Graphviz DOT
+// (ported from the chen-er-generator DSL, https://github.com/AhmWael/chen-er-generator;
+//  total-participation edges use Graphviz's "color:color" trick to draw a true double line,
+//  matching Figure 3.14's notation more closely than a bold single line.)
+// ================================
+function parseDSL(dsl) {
+    const lines = dsl.split("\n").map(l => l.trim()).filter(l => l);
+
+    const entities = {};
+    const relationships = {};
+    const attributes = [];
+    const composites = [];
+    const edges = [];
+
+    let entityColor = "#AED6F1";
+    let weakEntityColor = "#D6EAF8";
+    let relationshipColor = "#FFE4B5";
+
+    for (const line of lines) {
+        if (line.startsWith("#") || line === "") continue;
+        let m;
+        if (m = line.match(/^entities\s*:\s*(#[0-9A-Fa-f]{3,6})$/)) { entityColor = m[1]; continue; }
+        if (m = line.match(/^weak_entities\s*:\s*(#[0-9A-Fa-f]{3,6})$/)) { weakEntityColor = m[1]; continue; }
+        if (m = line.match(/^relationships\s*:\s*(#[0-9A-Fa-f]{3,6})$/)) { relationshipColor = m[1]; continue; }
+
+        if (m = line.match(/^entity\s+(\w+)$/)) entities[m[1]] = { weak: false };
+        else if (m = line.match(/^weak entity\s+(\w+)$/)) entities[m[1]] = { weak: true };
+        else if (m = line.match(/^relationship\s+(\w+)$/)) relationships[m[1]] = { identifying: false };
+        else if (m = line.match(/^identifying relationship\s+(\w+)$/)) relationships[m[1]] = { identifying: true };
+        else if (m = line.match(/^attribute\s+(\w+)\s+(\w+)(?:\s+(PK|MULTI|DERIVED))?$/))
+            attributes.push({ owner: m[1], name: m[2], type: m[3] || null });
+        else if (m = line.match(/^composite\s+(\w+)\s+(\w+)\s*{(.+)}$/))
+            composites.push({ owner: m[1], name: m[2], parts: m[3].split(",").map(p => p.trim()) });
+        else if (m = line.match(/^(\w+)\s+(\w+)\s+\((1|N|M)\)\s+(TOTAL|PARTIAL)\s+--\s+\((1|N|M)\)\s+(TOTAL|PARTIAL)\s+(\w+)$/))
+            edges.push({ rel: m[1], from: m[2], fromCard: m[3], fromPart: m[4], toCard: m[5], toPart: m[6], to: m[7] });
+        else
+            throw new Error("The tool could not understand this line:\n\n  " + line);
+    }
+
+    let dot = `graph ER {
+layout=neato;
+overlap=scale;
+overlap_scaling=0.003;
+splines=true;
+K=0.4;
+epsilon=0.01;
+defaultdist=1.0;
+
+node [fontname="Helvetica", width=1.6, height=0.9];
+edge [len=1.5];
+`;
+
+    for (const [name, e] of Object.entries(entities)) {
+        const periph = e.weak ? ", peripheries=2" : "";
+        const fillColor = e.weak ? weakEntityColor : entityColor;
+        dot += `  ${name} [shape=rectangle${periph}, style=filled, fillcolor="${fillColor}", margin="0.3,0.2"];\n`;
+    }
+
+    for (const [name, r] of Object.entries(relationships)) {
+        const periph = r.identifying ? ", peripheries=2" : "";
+        dot += `  ${name} [shape=diamond${periph}, style=filled, fillcolor="${relationshipColor}", margin="0.3,0.2"];\n`;
+    }
+
+    for (const a of attributes) {
+        let extra = [];
+        if (a.type === "MULTI") extra.push("peripheries=2");
+        if (a.type === "DERIVED") extra.push("style=dashed");
+        const label = a.type === "PK" ? `< <u>${a.name}</u> >` : `"${a.name}"`;
+        const node = `${a.owner}_${a.name}`;
+        dot += `  ${node} [shape=ellipse, label=${label}, width=0.8, height=0.5, margin="0.1,0.05"${extra.length ? ", " + extra.join(",") : ""}];\n`;
+        dot += `  ${a.owner} -- ${node} [len=0.5, weight=50];\n`;
+    }
+
+    for (const c of composites) {
+        const root = `${c.owner}_${c.name}`;
+        dot += `  ${root} [shape=ellipse, label="${c.name}", width=0.8, height=0.5, margin="0.1,0.05"];\n`;
+        dot += `  ${c.owner} -- ${root} [len=0.5, weight=30];\n`;
+        for (const part of c.parts) {
+            const partNode = `${root}_${part}`;
+            dot += `  ${partNode} [shape=ellipse, label="${part}", width=0.8, height=0.5, margin="0.1,0.05"];\n`;
+            dot += `  ${root} -- ${partNode} [len=0.5, weight=30];\n`;
+        }
+    }
+
+    for (const e of edges) {
+        const fromColor = e.fromPart === "TOTAL" ? "black:black" : "black";
+        const toColor = e.toPart === "TOTAL" ? "black:black" : "black";
+        dot += `  ${e.rel} -- ${e.from} [label="${e.fromCard}", color="${fromColor}", len=0.5, weight=10];\n`;
+        dot += `  ${e.rel} -- ${e.to} [label="${e.toCard}", color="${toColor}", len=0.5, weight=10];\n`;
+    }
+
+    dot += "}";
+    return dot;
+}
+
+// ================================
+// Dynamic notation-symbol icons (Figure 3.14, generated in code, not static images)
+// ================================
+function symbolSVG(kind) {
+    const S = 2; // stroke width
+    const stroke = "#172033", fill = "#eef2f7";
+    const wrap = (inner, vb = "0 0 100 50") => `<svg viewBox="${vb}" width="90" height="46" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+    const ellipseWithText = (text, extraAttrs = "") =>
+        `<ellipse cx="50" cy="25" rx="42" ry="18" fill="${fill}" stroke="${stroke}" stroke-width="${S}" ${extraAttrs}/>` +
+        `<text x="50" y="30" font-size="13" text-anchor="middle" font-family="Helvetica">${text}</text>`;
+    switch (kind) {
+        case "entity":
+            return wrap(`<rect x="8" y="8" width="84" height="34" fill="${fill}" stroke="${stroke}" stroke-width="${S}"/>`);
+        case "weak":
+            return wrap(`<rect x="4" y="4" width="92" height="42" fill="none" stroke="${stroke}" stroke-width="${S}"/>` +
+                        `<rect x="10" y="10" width="80" height="30" fill="${fill}" stroke="${stroke}" stroke-width="${S}"/>`);
+        case "relationship":
+            return wrap(`<polygon points="50,4 96,25 50,46 4,25" fill="#FFE4B5" stroke="${stroke}" stroke-width="${S}"/>`);
+        case "identifying":
+            return wrap(`<polygon points="50,2 98,25 50,48 2,25" fill="none" stroke="${stroke}" stroke-width="${S}"/>` +
+                        `<polygon points="50,8 91,25 50,42 9,25" fill="#FFE4B5" stroke="${stroke}" stroke-width="${S}"/>`);
+        case "attribute":
+            return wrap(ellipseWithText("name"));
+        case "key":
+            return wrap(ellipseWithText("<tspan text-decoration=\"underline\">id</tspan>"));
+        case "multi":
+            return wrap(`<ellipse cx="50" cy="25" rx="46" ry="21" fill="none" stroke="${stroke}" stroke-width="${S}"/>` + ellipseWithText("phone"));
+        case "derived":
+            return wrap(ellipseWithText("age", `stroke-dasharray="5,3"`));
+        case "composite":
+            return wrap(
+                `<ellipse cx="50" cy="14" rx="30" ry="12" fill="${fill}" stroke="${stroke}" stroke-width="${S}"/>` +
+                `<text x="50" y="18" font-size="11" text-anchor="middle" font-family="Helvetica">name</text>` +
+                `<line x1="35" y1="24" x2="18" y2="36" stroke="${stroke}" stroke-width="${S}"/>` +
+                `<line x1="65" y1="24" x2="82" y2="36" stroke="${stroke}" stroke-width="${S}"/>` +
+                `<ellipse cx="18" cy="40" rx="16" ry="8" fill="${fill}" stroke="${stroke}" stroke-width="${S}"/>` +
+                `<text x="18" y="43" font-size="9" text-anchor="middle" font-family="Helvetica">first</text>` +
+                `<ellipse cx="82" cy="40" rx="16" ry="8" fill="${fill}" stroke="${stroke}" stroke-width="${S}"/>` +
+                `<text x="82" y="43" font-size="9" text-anchor="middle" font-family="Helvetica">last</text>`,
+                "0 0 100 52");
+        case "total":
+            return wrap(
+                `<circle cx="10" cy="25" r="4" fill="${stroke}"/><circle cx="90" cy="25" r="4" fill="${stroke}"/>` +
+                `<line x1="10" y1="21" x2="90" y2="21" stroke="${stroke}" stroke-width="${S}"/>` +
+                `<line x1="10" y1="29" x2="90" y2="29" stroke="${stroke}" stroke-width="${S}"/>`);
+        case "partial":
+            return wrap(
+                `<circle cx="10" cy="25" r="4" fill="${stroke}"/><circle cx="90" cy="25" r="4" fill="${stroke}"/>` +
+                `<line x1="10" y1="25" x2="90" y2="25" stroke="${stroke}" stroke-width="${S}"/>`);
+        case "cardinality":
+            return wrap(
+                `<circle cx="10" cy="25" r="4" fill="${stroke}"/><circle cx="90" cy="25" r="4" fill="${stroke}"/>` +
+                `<line x1="10" y1="25" x2="90" y2="25" stroke="${stroke}" stroke-width="${S}"/>` +
+                `<rect x="42" y="6" width="16" height="15" fill="white" stroke="none"/>` +
+                `<text x="50" y="18" font-size="14" font-weight="bold" text-anchor="middle" font-family="Helvetica">N</text>`);
+        default:
+            return "";
+    }
+}
+
+document.querySelectorAll('#nodeNotationTable tr[data-sym]').forEach(row => {
+    const kind = row.getAttribute('data-sym');
+    row.querySelector('.symcell').innerHTML = symbolSVG(kind);
+});
+
+// ================================
+// Color palettes (matplotlib-style qualitative palettes)
+// ================================
+const palettes = {
+    Set1:    { entity: "#377EB8", weak: "#A6CEE3", relationship: "#FF7F00" },
+    Set2:    { entity: "#66C2A5", weak: "#B3E2CD", relationship: "#FC8D62" },
+    Set3:    { entity: "#8DD3C7", weak: "#CCEBC5", relationship: "#FDB462" },
+    Pastel1: { entity: "#B3CDE3", weak: "#DECBE4", relationship: "#FBB4AE" },
+    Dark2:   { entity: "#1B9E77", weak: "#66C2A5", relationship: "#D95F02" },
+};
+const paletteRow = document.getElementById('paletteRow');
+Object.keys(palettes).forEach((name, i) => {
+    const c = palettes[name];
+    const label = document.createElement('label');
+    label.className = 'palette-option';
+    label.innerHTML = `<input type="radio" name="palette" value="${name}" ${i === 0 ? 'checked' : ''}> ${name}
+        <span class="swatch"><span style="background:${c.entity}"></span><span style="background:${c.weak}"></span><span style="background:${c.relationship}"></span></span>`;
+    paletteRow.appendChild(label);
+});
+
+function applyPalette(name) {
+    const c = palettes[name];
+    if (!c) return;
+    let text = dslInput.value;
+    text = text.split("\n").filter(l =>
+        !/^entities\s*:/.test(l.trim()) &&
+        !/^weak_entities\s*:/.test(l.trim()) &&
+        !/^relationships\s*:/.test(l.trim()) &&
+        l.trim() !== "#colors"
+    ).join("\n");
+    const colorBlock = `#colors\nentities: ${c.entity}\nweak_entities: ${c.weak}\nrelationships: ${c.relationship}\n\n`;
+    dslInput.value = colorBlock + text.replace(/^\s+/, "");
+    compile();
+}
+
+paletteRow.addEventListener('change', (e) => {
+    if (e.target.name === 'palette') applyPalette(e.target.value);
+});
+
+// ================================
+// Book-derived examples
+// ================================
+const examples = {
+employee: `# Employee & Dependent — COMPANY database (Sec 3.2–3.5)
+# A minimal, book-exact example: entity, weak entity, identifying relationship, composite attribute.
+
+#colors
+entities: #AED6F1
+weak_entities: #D6EAF8
+relationships: #FFE4B5
+
+entity Employee
+weak entity Dependent
+
+attribute Employee Ssn PK
+composite Employee Name { FirstName, MiddleName, LastName }
+attribute Employee Address
+attribute Employee Sex
+attribute Employee BirthDate
+attribute Employee Salary
+
+attribute Dependent Name PK
+attribute Dependent Sex
+attribute Dependent BirthDate
+attribute Dependent Relationship
+
+identifying relationship DependentsOf
+
+DependentsOf Employee (1) PARTIAL -- (N) TOTAL Dependent
+`,
+student: `# Student — University database (Sec 3.10)
+# Attributes exactly as described in the textbook: Sid, Name (composite), Addr, Phone, Major, DoB.
+
+#colors
+entities: #AED6F1
+weak_entities: #D6EAF8
+relationships: #FFE4B5
+
+entity Student
+
+attribute Student Sid PK
+composite Student Name { FName, MName, LName }
+attribute Student Addr
+attribute Student Phone
+attribute Student Major
+attribute Student DoB
+`,
+customer: `# Customer — generic illustrative example (NOT from Ch.1–3)
+# Included only to demonstrate MULTI and DERIVED attributes together.
+
+#colors
+entities: #AED6F1
+weak_entities: #D6EAF8
+relationships: #FFE4B5
+
+entity Customer
+
+attribute Customer CustomerID PK
+composite Customer Name { First, Last }
+attribute Customer Phone MULTI
+attribute Customer JoinDate
+attribute Customer LoyaltyYears DERIVED
+`,
+};
+
+document.getElementById('loadExampleBtn').addEventListener('click', () => {
+    const key = document.getElementById('exampleSelect').value;
+    if (examples[key]) {
+        dslInput.value = examples[key];
+        compile();
+    }
+});
+
+// ================================
+// UI wiring
+// ================================
+const compileBtn = document.getElementById('compileBtn');
+const loadSkeletonBtn = document.getElementById('loadSkeletonBtn');
+const svgContainer = document.getElementById('svgContainer');
+const dslInput = document.getElementById('dslInput');
+const statusEl = document.getElementById('status');
+
+let originalSvgString = null;
+let vizInstance = null;
+
+const skeletonDSL = `# Taiwan Tech University — starter skeleton for Q13
+# Add the remaining entities, attributes and relationships yourself.
+
+#colors
+entities: #AED6F1
+weak_entities: #D6EAF8
+relationships: #FFE4B5
+
+entity College
+entity Department
+
+attribute College Name PK
+attribute College Office
+attribute College Phone MULTI
+
+attribute Department Name PK
+attribute Department Code
+attribute Department Office
+attribute Department Phone
+
+relationship Administers
+
+Administers College (1) TOTAL -- (N) PARTIAL Department
+
+# TODO: add Course, Section (as a weak entity), Instructor, Student
+# TODO: add Offers, Teaches, Takes, MajorsIn and the identifying relationship for Section
+`;
+
+// Populate the editor immediately — this must not depend on the CDN library
+// having loaded successfully, so the page is usable even if that's slow/blocked.
+dslInput.value = examples.employee;
+
+async function renderSVG(dot) {
+    try {
+        statusEl.textContent = "Rendering…";
+        statusEl.className = "status";
+        if (typeof Viz === "undefined") {
+            throw new Error("The drawing library has not loaded yet. Check your internet connection and refresh the page.");
+        }
+        if (!vizInstance) vizInstance = new Viz();
+        const svgStr = await vizInstance.renderString(dot, { format: "svg" });
+        originalSvgString = svgStr;
+
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgStr, "image/svg+xml");
+        const svgElem = svgDoc.documentElement;
+
+        svgContainer.innerHTML = "";
+        svgContainer.appendChild(svgElem);
+        statusEl.textContent = "✓ Diagram rendered.";
+        statusEl.className = "status ok";
+    } catch (err) {
+        vizInstance = null;
+        svgContainer.innerHTML = `<p class="error">Error: ${err.message}</p>`;
+        statusEl.textContent = "✗ Could not render — see error above.";
+        statusEl.className = "status err";
+    }
+}
+
+async function compile() {
+    try {
+        const dot = parseDSL(dslInput.value);
+        await renderSVG(dot);
+    } catch (err) {
+        svgContainer.innerHTML = `<p class="error">Error: ${err.message}</p>`;
+        statusEl.textContent = "✗ The tool could not read your code. See the error message above.";
+        statusEl.className = "status err";
+    }
+}
+
+compileBtn.addEventListener('click', compile);
+loadSkeletonBtn.addEventListener('click', () => { dslInput.value = skeletonDSL; compile(); });
+
+// -------------------------
+// Downloads
+// -------------------------
+function triggerDownload(href, filename) {
+    const link = document.createElement('a');
+    link.href = href;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+document.getElementById('downloadSvgBtn').addEventListener('click', () => {
+    if (!originalSvgString) return alert('Compile a diagram first.');
+    const blob = new Blob([originalSvgString], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    triggerDownload(url, 'chen_er_diagram.svg');
+    URL.revokeObjectURL(url);
+});
+
+function svgToCanvas(callback) {
+    if (!originalSvgString) { alert('Compile a diagram first.'); return; }
+    const img = new Image();
+    const svgBlob = new Blob([originalSvgString], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
+    img.onload = () => {
+        const scale = 2;
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.scale(scale, scale);
+        ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+        callback(canvas);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); alert('Could not convert the diagram to an image.'); };
+    img.src = url;
+}
+
+document.getElementById('downloadPngBtn').addEventListener('click', () => {
+    svgToCanvas((canvas) => triggerDownload(canvas.toDataURL('image/png'), 'chen_er_diagram.png'));
+});
+document.getElementById('downloadJpgBtn').addEventListener('click', () => {
+    svgToCanvas((canvas) => triggerDownload(canvas.toDataURL('image/jpeg', 0.92), 'chen_er_diagram.jpg'));
+});
+document.getElementById('downloadPdfBtn').addEventListener('click', () => {
+    svgToCanvas((canvas) => {
+        try {
+            const { jsPDF } = window.jspdf;
+            const imgData = canvas.toDataURL('image/png');
+            const orientation = canvas.width >= canvas.height ? 'landscape' : 'portrait';
+            const doc = new jsPDF({ orientation, unit: 'pt', format: [canvas.width / 2, canvas.height / 2] });
+            doc.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
+            doc.save('chen_er_diagram.pdf');
+        } catch (err) {
+            alert('PDF export failed (' + err.message + '). Please use the PNG or SVG download instead.');
+        }
+    });
+});
+
+// Auto-render on load
+window.addEventListener('load', compile);
+</script>
+
+</body>
+</html>
