@@ -147,7 +147,7 @@ const algo=a=>{ST=[];CK=[];SW=[];let k=0;const ex=a.exs.map(e=>exCard(a,e,k++)).
   return `<h3 class="mb-1">${a.name} <small class="text-muted fs-6">${a.full}</small> <span class="badge text-bg-dark fs-6">${a.mode}</span></h3>
   <ul class="nav nav-tabs my-3">${['📖 Lecture notes','🧪 Examples ('+a.exs.length+')','✏️ Practice + solution ('+a.pr.length+')'].map((t,i)=>`<li class="nav-item"><button class="nav-link${i?'':' active'}" data-bs-toggle="tab" data-bs-target="#p${i}">${t}</button></li>`).join('')}</ul>
   <div class="tab-content card card-body"><div class="tab-pane fade show active" id="p0">${notes(a)}</div>
-   <div class="tab-pane fade" id="p1">${call(a.from=='galvin'?'book':'warn',a.from=='galvin'?'📖 Examples tagged “Galvin” use the book’s data; a green badge means our simulator reproduces the value printed in the book. “Illustration” = our numbers following the book’s rules.':'⚠️ Our own example (not from Galvin).')}${ex}</div>
+   <div class="tab-pane fade" id="p1">${call(a.from=='galvin'?'book':'warn',a.from=='galvin'?'📖 Examples tagged “Galvin” use the book’s data; a green badge means our simulator reproduces the value printed in the book. “Illustration” = our numbers following the book’s rules.':'⚠️ (not from Galvin).')}${ex}</div>
    <div class="tab-pane fade" id="p2">${pr}</div></div>`};
 
 const over=()=>{const P=D.algos[1].pr[0].p,ids=['fcfs','sjf','srtf','hrrn','rr'],R=ids.map(i=>solve(i,P,{q:3})),m=Math.min(...R.map(r=>r.W)),
