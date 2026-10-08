@@ -619,8 +619,8 @@ const DATA={
    "cons": "Needs the burst time in advance; ratios must be recomputed at every decision.",
    "exs": [
     {
-     "t": "Worked example (our own — not from Galvin)",
-     "s": "own example",
+     "t": "Worked example (not from Galvin)",
+     "s": "example",
      "n": "At t = 9 the ratios are P₂ = (5+4)/4 = 2.25, P₃ = (3+5)/5 = 1.6, P₄ = (1+2)/2 = 1.5 → P₂. At t = 13: P₃ = 2.4, P₄ = 3.5 → P₄.",
      "p": [
       {
