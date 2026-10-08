@@ -942,8 +942,8 @@ const DATA={
    "cons": "Extra queue and bookkeeping of the leftover quantum.",
    "exs": [
     {
-     "t": "Worked example (our own — not from Galvin)",
-     "s": "own example",
+     "t": "Worked example (not from Galvin)",
+     "s": "example",
      "n": "P₁ runs 2 ms, blocks for 3 ms (back at t = 5) with 2 ms of quantum left. The CPU is busy until t = 6, then P₁ is served from Aux first and may run only 2 ms before P₃ (Main) gets its turn.",
      "c": {
       "q": 4
