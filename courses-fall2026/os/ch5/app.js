@@ -153,7 +153,7 @@ const algo=a=>{ST=[];CK=[];SW=[];let k=0;const ex=a.exs.map(e=>exCard(a,e,k++)).
 const over=()=>{const P=D.algos[1].pr[0].p,ids=['fcfs','sjf','srtf','hrrn','rr'],R=ids.map(i=>solve(i,P,{q:3})),m=Math.min(...R.map(r=>r.W)),
   q7=D.q7,PR=solve('prio',q7.procs),RR=solve('rr',q7.procs,{q:q7.q}),A={id:'x'};
   return call('book','📖 <b>Slide alignment:</b> Silberschatz, Galvin &amp; Gagne, <i>Operating System Concepts</i>, Chapter 5, “CPU Scheduling,” §5.3 Scheduling Algorithms (pp.205–217). Page numbers next to each fact refer to Galvin, Ch. 5.')+
-  call('warn','⚠️ <b>Beyond Galvin:</b> HRRN (Highest Response Ratio Next) and VRR (Virtual Round Robin) are on the instructor’s list but are not covered in Galvin, Ch. 5, §5.3 — their tabs say so. Multilevel Queue (MLQ) and Multilevel Feedback Queue (MLFQ) have no numeric example in the book, so their examples are labelled <i>illustration</i>.')+
+  call('warn','⚠️ <b>Beyond Galvin:</b> HRRN (Highest Response Ratio Next) and VRR (Virtual Round Robin) are on the instructor’s list but are not covered in Galvin, Ch. 5, §5.3. Multilevel Queue (MLQ) and Multilevel Feedback Queue (MLFQ) have no numeric example in the book, so their examples are labelled <i>illustration</i>.')+
   `<div class="card card-body mb-3"><h4>🎯 Learning objectives</h4>${ul(D.objectives)}</div>
   <div class="card card-body mb-3"><h4>📘 Key definitions</h4>${legend}${defs(D.defs)}
    <h6>How to read a Gantt chart</h6>${gantt(solve('fcfs',D.algos[0].exs[0].p).g,undefined,capt('FCFS example from Galvin p.206 (P₁ = 24, P₂ = 3, P₃ = 3 ms).'))}
