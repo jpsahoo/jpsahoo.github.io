@@ -114,7 +114,7 @@ const pred=x=>{let τ=x.tau0;const g=[τ],rows=x.t.map((t,i)=>{const n=x.a*t+(1-
 const sweep=x=>`<h5>Average turnaround vs time quantum (data of Galvin Figure 5.6, p.212)</h5>${inp(x.p)}${tbl(['q',...x.qs],[['Avg TAT',...x.qs.map(q=>solve('rr',x.p,{q}).T)],['Avg WT',...x.qs.map(q=>solve('rr',x.p,{q}).W)]])}
   <p class="small text-muted">The curve is <b>not</b> monotonic: a larger quantum does not always lower the average turnaround time.</p>`;
 
-const notes=a=>call(a.from=='galvin'?'book':'warn',a.from=='galvin'?`📖 <b>Source:</b> Galvin, Ch. 5, ${a.src}.`:`⚠️ <b>Beyond Galvin §5.3.</b> This algorithm is on the instructor’s list but is not covered in Galvin, Ch. 5, §5.3; the notes and example below are our own.`)+(a.defs?`<h5>📘 Key definitions</h5>${legend}${defs(a.defs)}`:'')+
+const notes=a=>call(a.from=='galvin'?'book':'warn',a.from=='galvin'?`📖 <b>Source:</b> Galvin, Ch. 5, ${a.src}.`:`⚠️ <b>Beyond Galvin §5.3.</b> This algorithm is on the instructor’s list but is not covered in Galvin, Ch. 5, §5.3.`)+(a.defs?`<h5>📘 Key definitions</h5>${legend}${defs(a.defs)}`:'')+
   `<h5>Rule in one line</h5><div class="callout rule">${a.rule}</div>${a.math?`\\[${a.math}\\]`:''}
   <h5>How to solve — step by step</h5>${ol(a.steps)}
   ${a.notes.map(n=>`<h5>${n.h}</h5>${ul(n.items)}${n.table?`<p class="mb-1"><b>${n.table.cap}</b></p>${tbl(n.table.h,n.table.r)}`:''}`).join('')}
