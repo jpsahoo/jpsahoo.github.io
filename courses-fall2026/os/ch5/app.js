@@ -2,7 +2,7 @@
 const $=s=>document.querySelector(s),fmt=x=>+x.toFixed(2),nm=a=>a.map(p=>p.n).join(', '),sum=(a,k)=>a.reduce((s,x)=>s+x[k],0),
 COL=['#2563eb','#16a34a','#d97706','#dc2626','#7c3aed','#0891b2'],
 col=n=>{if(n=='idle')return'#94a3b8';const c=n.slice(-1),i='₀₁₂₃₄₅₆₇₈₉'.indexOf(c);return COL[(i>=0?i:(+c||0))%6]};
-let D,ST=[],CK=[],GN=0,RO=null;
+let D,ST=[],CK=[],SW=[],GN=0,RO=null;
 
 /* ---------- 1. Schedulers: each returns a Gantt list [[proc,start,end,note,queue]] ---------- */
 const add=(g,n,s,e,i,l,keep)=>{ // append a slice, auto-insert idle gaps, merge contiguous slices (unless keep)
@@ -114,7 +114,7 @@ const pred=x=>{let τ=x.tau0;const g=[τ],rows=x.t.map((t,i)=>{const n=x.a*t+(1-
 const sweep=x=>`<h5>Average turnaround vs time quantum (data of Galvin Figure 5.6, p.212)</h5>${inp(x.p)}${tbl(['q',...x.qs],[['Avg TAT',...x.qs.map(q=>solve('rr',x.p,{q}).T)],['Avg WT',...x.qs.map(q=>solve('rr',x.p,{q}).W)]])}
   <p class="small text-muted">The curve is <b>not</b> monotonic: a larger quantum does not always lower the average turnaround time.</p>`;
 
-const notes=a=>call(a.from=='galvin'?'book':'warn',a.from=='galvin'?`📖 <b>Source:</b> Galvin ${a.src} (page numbers as in your PDF).`:`⚠️ <b>Beyond Galvin §5.3.</b> This algorithm is on the instructor’s list but not in the supplied book pages; the notes and example below are our own.`)+(a.defs?`<h5>📘 Key definitions</h5>${legend}${defs(a.defs)}`:'')+
+const notes=a=>call(a.from=='galvin'?'book':'warn',a.from=='galvin'?`📖 <b>Source:</b> Galvin, Ch. 5, ${a.src}.`:`⚠️ <b>Beyond Galvin §5.3.</b> This algorithm is on the instructor’s list but is not covered in Galvin, Ch. 5, §5.3; the notes and example below are our own.`)+(a.defs?`<h5>📘 Key definitions</h5>${legend}${defs(a.defs)}`:'')+
   `<h5>Rule in one line</h5><div class="callout rule">${a.rule}</div>${a.math?`\\[${a.math}\\]`:''}
   <h5>How to solve — step by step</h5>${ol(a.steps)}
   ${a.notes.map(n=>`<h5>${n.h}</h5>${ul(n.items)}${n.table?`<p class="mb-1"><b>${n.table.cap}</b></p>${tbl(n.table.h,n.table.r)}`:''}`).join('')}
@@ -122,12 +122,15 @@ const notes=a=>call(a.from=='galvin'?'book':'warn',a.from=='galvin'?`📖 <b>Sou
   <div class="row g-3 mt-1"><div class="col-md-6"><div class="alert alert-success h-100 mb-0"><b>Advantages</b><br>${a.pros}</div></div><div class="col-md-6"><div class="alert alert-danger h-100 mb-0"><b>Drawbacks</b><br>${a.cons}</div></div></div>`;
 
 const exCard=(a,e,k)=>{const id=e.u||a.id,A={id},R=solve(id,e.p,e.c);ST[k]={g:R.g,up:1,cap:capt(e.t+(e.s?' · '+e.s:''))};
+  SW[k]={P:e.p,R,label:a.full||a.name,short:a.name};
   return `<div class="card card-body mb-4"><div class="d-flex flex-wrap gap-2 align-items-center"><h5 class="m-0">${e.t}</h5><span class="badge text-bg-primary">${e.s}</span>${verify(e.b,R)}</div>
   <p class="mt-3">${e.n}</p>${inp(e.p)}${cfg(A,e.c)}
   <h6>Step 1 — Gantt chart, one scheduling decision at a time</h6><div id="g${k}"></div>
   <div class="btn-group btn-group-sm mb-3"><button class="btn btn-outline-dark" onclick="go(${k},-99)">⏮ Reset</button><button class="btn btn-outline-dark" onclick="go(${k},-1)">◀ Prev</button><button class="btn btn-dark" onclick="go(${k},1)">Next ▶</button><button class="btn btn-outline-dark" onclick="go(${k},99)">All ⏭</button></div>
   <ol class="trace" id="tr${k}"></ol>
-  <h6>Step 2 — Completion, turnaround and waiting time</h6>${out(R,A)}<h6>Step 3 — Averages</h6>${avg(R)}</div>`};
+  <h6>Step 2 — Completion, turnaround and waiting time</h6>${out(R,A)}<h6>Step 3 — Averages</h6>${avg(R)}
+  <h6>Step 4 — Classic textbook diagram (Stallings-style): arrival cascade, per-process schedule and T<sub>r</sub>/T<sub>s</sub> table</h6>
+  <div class="swim-wrap" id="sw${k}"></div><div id="swt${k}"></div></div>`};
 
 const prCard=(a,e,k)=>{const R=solve(a.id,e.p,e.c);CK[k]=R;
   return `<div class="card card-body mb-4"><h5>${e.t}</h5>${inp(e.p)}${cfg(a,e.c)}
@@ -140,7 +143,7 @@ const prCard=(a,e,k)=>{const R=solve(a.id,e.p,e.c);CK[k]=R;
    <div class="col-auto"><button class="btn btn-primary btn-sm" onclick="check(${k})">Check</button></div><div class="col-auto" id="c${k}"></div></div>
   <div class="collapse" id="s${k}"><h6>Solution</h6>${gantt(R.g,undefined,capt('Solution — '+e.t))}${out(R,a)}${avg(R)}</div></div>`};
 
-const algo=a=>{ST=[];CK=[];let k=0;const ex=a.exs.map(e=>exCard(a,e,k++)).join(''),pr=a.pr.map(e=>prCard(a,e,k++)).join('');
+const algo=a=>{ST=[];CK=[];SW=[];let k=0;const ex=a.exs.map(e=>exCard(a,e,k++)).join(''),pr=a.pr.map(e=>prCard(a,e,k++)).join('');
   return `<h3 class="mb-1">${a.name} <small class="text-muted fs-6">${a.full}</small> <span class="badge text-bg-dark fs-6">${a.mode}</span></h3>
   <ul class="nav nav-tabs my-3">${['📖 Lecture notes','🧪 Examples ('+a.exs.length+')','✏️ Practice + solution ('+a.pr.length+')'].map((t,i)=>`<li class="nav-item"><button class="nav-link${i?'':' active'}" data-bs-toggle="tab" data-bs-target="#p${i}">${t}</button></li>`).join('')}</ul>
   <div class="tab-content card card-body"><div class="tab-pane fade show active" id="p0">${notes(a)}</div>
@@ -149,8 +152,8 @@ const algo=a=>{ST=[];CK=[];let k=0;const ex=a.exs.map(e=>exCard(a,e,k++)).join('
 
 const over=()=>{const P=D.algos[1].pr[0].p,ids=['fcfs','sjf','srtf','hrrn','rr'],R=ids.map(i=>solve(i,P,{q:3})),m=Math.min(...R.map(r=>r.W)),
   q7=D.q7,PR=solve('prio',q7.procs),RR=solve('rr',q7.procs,{q:q7.q}),A={id:'x'};
-  return call('book','📖 <b>Slide alignment:</b> Silberschatz, Galvin &amp; Gagne, <i>Operating System Concepts</i>, Chapter 5 “CPU Scheduling”, §5.3 Scheduling Algorithms (pp.205–217 of your PDF). Page numbers appear next to each fact.')+
-  call('warn','⚠️ <b>Beyond Galvin:</b> HRRN and VRR are on the instructor’s list but not in §5.3 — their tabs say so. Multilevel Queue and MLFQ have no numeric example in the book, so their examples are labelled <i>illustration</i>.')+
+  return call('book','📖 <b>Slide alignment:</b> Silberschatz, Galvin &amp; Gagne, <i>Operating System Concepts</i>, Chapter 5, “CPU Scheduling,” §5.3 Scheduling Algorithms (pp.205–217). Page numbers next to each fact refer to Galvin, Ch. 5.')+
+  call('warn','⚠️ <b>Beyond Galvin:</b> HRRN (Highest Response Ratio Next) and VRR (Virtual Round Robin) are on the instructor’s list but are not covered in Galvin, Ch. 5, §5.3 — their tabs say so. Multilevel Queue (MLQ) and Multilevel Feedback Queue (MLFQ) have no numeric example in the book, so their examples are labelled <i>illustration</i>.')+
   `<div class="card card-body mb-3"><h4>🎯 Learning objectives</h4>${ul(D.objectives)}</div>
   <div class="card card-body mb-3"><h4>📘 Key definitions</h4>${legend}${defs(D.defs)}
    <h6>How to read a Gantt chart</h6>${gantt(solve('fcfs',D.algos[0].exs[0].p).g,undefined,capt('FCFS example from Galvin p.206 (P₁ = 24, P₂ = 3, P₃ = 3 ms).'))}
@@ -159,8 +162,8 @@ const over=()=>{const P=D.algos[1].pr[0].p,ids=['fcfs','sjf','srtf','hrrn','rr']
    <h6>Scheduling criteria</h6>${tbl(['Criterion','Meaning','Galvin'],D.criteria.map(c=>[`<b>${c[0]}</b>`,c[1],c[2]]))}<p>${D.goal}</p>
    <h6>Key formulas</h6>${D.formulas.map(f=>`\\[${f}\\]`).join('')}<p class="small text-muted">${D.formulas_note}</p>
    <h6>Recipe for every exercise</h6>${ol(D.recipe)}</div>
-  <div class="card card-body mb-3"><h4>Part B — Algorithms at a glance</h4>${tbl(['Algorithm','Type','Picks next…','Source'],D.algos.map(a=>[`<b>${a.name}</b>`,a.mode,a.pick,a.from=='galvin'?'Galvin '+a.src:'<span class="text-warning-emphasis">'+a.src+'</span>']))}
-   <h6>Same data, different algorithms</h6>${inp(P)}${tbl(['Algorithm','Avg TAT','Avg WT','Context switches'],R.map((r,k)=>[`<b>${D.algos.find(a=>a.id==ids[k]).name}</b>${ids[k]=='rr'?' (q = 3)':''}`,r.T,r.W==m?`<b class="text-success">${r.W} ★</b>`:r.W,r.g.filter(x=>x[0]!='idle').length-1]))}
+  <div class="card card-body mb-3"><h4>Part B — Algorithms at a glance</h4>${tbl(['Algorithm','Type','Picks next…','Source'],D.algos.map(a=>[`<b>${a.name}</b><br><small class="text-muted">${a.full}</small>`,a.mode,a.pick,a.from=='galvin'?'Galvin, Ch. 5, '+a.src:'<span class="text-warning-emphasis">'+a.src+'</span>']))}
+   <h6>Same data, different algorithms</h6>${inp(P)}${tbl(['Algorithm','Avg TAT','Avg WT','Context switches'],R.map((r,k)=>[`<b>${D.algos.find(a=>a.id==ids[k]).name}</b><br><small class="text-muted">${D.algos.find(a=>a.id==ids[k]).full}</small>${ids[k]=='rr'?' (q = 3)':''}`,r.T,r.W==m?`<b class="text-success">${r.W} ★</b>`:r.W,r.g.filter(x=>x[0]!='idle').length-1]))}
    <p class="mb-0 text-muted">★ = smallest average waiting time (Galvin: SJF/SRTF are optimal for waiting time; RR trades waiting time for regular CPU access).</p></div>
   <div class="card card-body"><h4>Part C — ${q7.title}</h4>${inp(q7.procs)}
    <button class="btn btn-success btn-sm align-self-start" data-bs-toggle="collapse" data-bs-target="#q7">✔ Solution</button><div class="collapse mt-2" id="q7">
@@ -174,12 +177,14 @@ const paint=k=>{$('#g'+k).innerHTML=gantt(ST[k].g,ST[k].up,ST[k].cap);$('#tr'+k)
 go=(k,d)=>{const s=ST[k];s.up=Math.max(0,Math.min(s.g.length,s.up+d));paint(k)},
 check=k=>{const ok=(i,v)=>Math.abs(parseFloat($(i+k).value)-v)<.015;$('#c'+k).innerHTML=ok('#aT',CK[k].T)&&ok('#aW',CK[k].W)?'<span class="badge text-bg-success">✓ Correct!</span>':'<span class="badge text-bg-danger">✗ Not yet — try the hint</span>'},
 show=i=>{document.querySelectorAll('#nav .nav-link').forEach((b,k)=>b.classList.toggle('active',k==i));
-  GN=0;ST=[];CK=[];RO&&RO.disconnect();
-  $('#view').innerHTML=i?algo(D.algos[i-1]):over();ST.forEach((_,k)=>ST[k]&&paint(k));watch($('#view'));window.scrollTo&&window.scrollTo({top:0});window.MathJax&&MathJax.typesetPromise&&MathJax.typesetPromise()};
+  GN=0;ST=[];CK=[];SW=[];RO&&RO.disconnect();
+  $('#view').innerHTML=i?algo(D.algos[i-1]):over();ST.forEach((_,k)=>ST[k]&&paint(k));
+  SW.forEach((s,k)=>{if(s){drawSwimlane($('#sw'+k),s.P,s.R,s.label);$('#swt'+k).innerHTML=swimTable(s.P,s.R,s.short)}});
+  watch($('#view'));window.scrollTo&&window.scrollTo({top:0});window.MathJax&&MathJax.typesetPromise&&MathJax.typesetPromise()};
 
 if(typeof document!='undefined'){
   if(window.ResizeObserver)RO=new ResizeObserver(es=>es.forEach(e=>fit(e.target)));else addEventListener('resize',()=>document.querySelectorAll('.gc').forEach(fit));
   if(!window.DATA)$('#view').innerHTML='<div class="alert alert-danger"><b>data.js was not found.</b> Keep <code>index.html</code>, <code>app.js</code>, <code>data.js</code> and <code>style.css</code> in the same folder.</div>';
   else{D=window.DATA;document.title=D.title;
-    $('#nav').innerHTML=['Overview',...D.algos.map(a=>a.name)].map((t,i)=>`<li class="nav-item"><button class="nav-link" onclick="show(${i})">${t}</button></li>`).join('');show(0)}}
+    $('#nav').innerHTML=['Overview',...D.algos.map(a=>a.name)].map((t,i)=>`<li class="nav-item"><button class="nav-link" onclick="show(${i})" title="${i?D.algos[i-1].full:'Chapter overview'}">${t}</button></li>`).join('');show(0)}}
 if(typeof module!='undefined')module.exports={solve,over,algo,verify,setD:d=>{D=d}};

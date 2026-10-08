@@ -4,7 +4,7 @@ const DATA={
  "objectives": [
   "Explain what CPU scheduling decides, and define throughput, turnaround time, waiting time and response time (Galvin pp.204–205).",
   "Draw a Gantt chart with a numbered time axis and compute CT, TAT and WT for any set of processes.",
-  "Apply FCFS, SJF, SRTF, Round Robin, Priority, Multilevel Queue and Multilevel Feedback Queue step by step — plus HRRN and VRR from the course list.",
+  "Apply FCFS (First-Come, First-Served), SJF (Shortest-Job-First), SRTF (Shortest-Remaining-Time-First), RR (Round Robin), Priority Scheduling, MLQ (Multilevel Queue) and MLFQ (Multilevel Feedback Queue) step by step — plus HRRN (Highest Response Ratio Next) and VRR (Virtual Round Robin) from the course list.",
   "Reproduce Galvin’s worked examples and check each result against the book (green “Matches Galvin” badges).",
   "Compare algorithms on the same data and explain why their Gantt charts differ."
  ],
@@ -130,7 +130,7 @@ const DATA={
    "from": "galvin",
    "src": "§5.3.1, pp.206–207",
    "pick": "Earliest arrival (FIFO queue)",
-   "rule": "The process that requests the CPU first is allocated the CPU first. The ready queue is a FIFO queue: a new process’s PCB is linked onto the tail; when the CPU is free it goes to the process at the head, which is then removed from the queue (p.206).",
+   "rule": "The process that requests the CPU first is allocated the CPU first. The ready queue is a FIFO (First-In, First-Out) queue: a new process’s PCB (Process Control Block) is linked onto the tail; when the CPU is free it goes to the process at the head, which is then removed from the queue (p.206).",
    "steps": [
     "Order the processes by arrival time (equal arrival → the order given).",
     "The first process starts at max(clock, AT).",
@@ -263,7 +263,7 @@ const DATA={
     {
      "k": "concept",
      "t": "First-come, first-served (FCFS)",
-     "d": "The process that requests the CPU first is allocated the CPU first. Implemented with a FIFO queue: a new PCB joins the tail, the CPU goes to the head.",
+     "d": "The process that requests the CPU first is allocated the CPU first. Implemented with a FIFO (First-In, First-Out) queue: a new PCB (Process Control Block) joins the tail, the CPU goes to the head.",
      "s": "Galvin p.206"
     },
     {
@@ -610,7 +610,7 @@ const DATA={
     {
      "h": "Where it comes from",
      "items": [
-      "HRRN is on the instructor’s algorithm list but is <b>not</b> in Galvin §5.3 (the supplied pages). It is described in Stallings’ text.",
+      "HRRN (Highest Response Ratio Next) is on the instructor’s algorithm list but is <b>not</b> covered in Galvin, Ch. 5, §5.3. It is described in Stallings’ text.",
       "It behaves like SJF for short jobs but, because the ratio grows with waiting, long jobs are eventually chosen — a form of aging."
      ]
     }
@@ -933,7 +933,7 @@ const DATA={
     {
      "h": "Where it comes from",
      "items": [
-      "VRR is on the instructor’s list but is <b>not</b> in Galvin §5.3; it is a Stallings refinement of Round Robin.",
+      "VRR (Virtual Round Robin) is on the instructor’s list but is <b>not</b> covered in Galvin, Ch. 5, §5.3; it is a Stallings refinement of Round Robin.",
       "It addresses the same concern as Galvin’s convoy effect: I/O-bound processes should not be penalised by CPU-bound ones (compare p.207)."
      ]
     }

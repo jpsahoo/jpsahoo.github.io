@@ -58,6 +58,17 @@ h6{margin:16px 0 6px;font-weight:700;color:#334155}
 .callout.rule{border-color:#4f46e5;background:#eef2ff}
 .callout.def-how{border-color:#0e7490;background:#ecfeff}
 
+/* Stallings-style swimlane diagram (arrival cascade + per-process schedule + summary table), drawn with D3.js */
+.swim-wrap{margin:14px 0 20px}
+.swim-svg{width:100%;height:auto;display:block;font-family:Georgia,'Times New Roman',serif}
+.swim-cap{font-size:12.5px;font-weight:700;fill:#172033}
+.swim-lbl{font-size:12px;font-weight:700}
+.swim-row-lbl{font-size:12.5px;font-weight:700;fill:#172033}
+.swim-axis{font-size:11px;fill:#334155}
+.swim-unit{font-size:11px;fill:#64748b}
+.swim-table{font-family:Georgia,'Times New Roman',serif}
+.swim-table .swim-algo{vertical-align:middle;font-weight:700}
+
 /* step-by-step trace */
 .trace li{padding:4px 8px;border-radius:6px}
 .trace li.cur{background:#fff8e7;border:1px solid #f3d68a}
