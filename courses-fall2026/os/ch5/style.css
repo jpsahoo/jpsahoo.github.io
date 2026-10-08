@@ -1,0 +1,45 @@
+body{background:#f4f6f9;color:#172033}
+
+/* course header / footer (mirrors the course page: college, course code, semester, instructor) */
+.hero{background:#172033;color:#dbe3ee;padding:26px 0 22px}
+.hero h1{color:#fff;font-size:1.9rem;margin:6px 0 4px}
+.hero .course{font-weight:700;letter-spacing:.04em;color:#93c5fd}
+.hero .college{font-size:.95rem;color:#cbd5e1}
+.hero .lead{font-size:1rem;color:#dbe3ee}
+.meta{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:6px 22px;font-size:.9rem}
+.foot{background:#172033;color:#cbd5e1;padding:20px 0;margin-top:30px;font-size:.92rem}
+.foot b{color:#fff}.foot code{color:#93c5fd}
+
+.nav-pills .nav-link{background:#fff;border:1px solid #d9e0e8;color:#172033;font-weight:600}
+.nav-pills .nav-link.active{background:#172033;border-color:#172033;color:#fff}
+.card{border-color:#d9e0e8;border-radius:12px}
+h4{margin-bottom:12px}
+h5{margin:20px 0 8px;font-size:1.1rem}
+.tab-pane>h5,.card-body>h5:not(.m-0){padding-bottom:6px;border-bottom:2px solid #edf0f4}
+h6{margin:16px 0 6px;font-weight:700;color:#334155}
+
+/* callouts (📖 book source, ⚠️ beyond the book) */
+.callout{border-left:5px solid #64748b;background:#f8fafc;padding:10px 14px;border-radius:8px;margin:12px 0}
+.callout.book{border-color:#2563eb;background:#eff6ff}
+.callout.warn{border-color:#d97706;background:#fff8e7}
+
+/* process badge */
+.pb{display:inline-block;min-width:44px;padding:2px 10px;border-radius:6px;color:#fff;font-weight:700}
+
+/* Gantt chart: block width is proportional to duration (flex = end - start) */
+.gantt{display:flex;height:66px;margin:14px 22px 42px;border:2px solid #1f2937;border-radius:6px}
+.blk{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;
+     color:#fff;border-right:2px solid #fff;transition:opacity .25s}
+.blk:first-child{border-radius:4px 0 0 4px}
+.blk:last-child{border-right:0;border-radius:0 4px 4px 0}
+.blk b{font-size:1.05rem}
+.blk small{font-size:.62rem;opacity:.9}
+.blk.off{opacity:.1}
+.t{position:absolute;bottom:-27px;left:0;transform:translateX(-50%);color:#172033;font-weight:700;font-size:.8rem}
+.t.e{left:auto;right:0;transform:translateX(50%)}
+
+/* step-by-step trace */
+.trace li{padding:4px 8px;border-radius:6px}
+.trace li.cur{background:#fff8e7;border:1px solid #f3d68a}
+.table td,.table th{white-space:nowrap}
+@media(max-width:600px){.hero h1{font-size:1.4rem}.gantt{margin-left:10px;margin-right:10px}.blk b{font-size:.75rem}.blk small{display:none}.t{font-size:.65rem}}
