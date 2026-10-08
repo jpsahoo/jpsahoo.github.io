@@ -26,20 +26,40 @@ h6{margin:16px 0 6px;font-weight:700;color:#334155}
 /* process badge */
 .pb{display:inline-block;min-width:44px;padding:2px 10px;border-radius:6px;color:#fff;font-weight:700}
 
-/* Gantt chart: block width is proportional to duration (flex = end - start) */
-.gantt{display:flex;height:66px;margin:14px 22px 42px;border:2px solid #1f2937;border-radius:6px}
-.blk{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;
-     color:#fff;border-right:2px solid #fff;transition:opacity .25s}
-.blk:first-child{border-radius:4px 0 0 4px}
-.blk:last-child{border-right:0;border-radius:0 4px 4px 0}
-.blk b{font-size:1.05rem}
+/* Gantt chart: bars (position/width in % of time) + a time axis underneath, so numbers always line up with block edges */
+.gc{margin:16px 30px 22px}
+.gbar{position:relative;height:66px;border-radius:6px;overflow:hidden;box-shadow:0 0 0 2px #1f2937;background:#fff}
+.blk{position:absolute;top:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;overflow:hidden;
+     color:#fff;box-shadow:inset -2px 0 0 #fff;transition:opacity .25s}
+.blk:last-child{box-shadow:none}
+.blk b{font-size:1.05rem;line-height:1.1}
 .blk small{font-size:.62rem;opacity:.9}
 .blk.off{opacity:.1}
-.t{position:absolute;bottom:-27px;left:0;transform:translateX(-50%);color:#172033;font-weight:700;font-size:.8rem}
-.t.e{left:auto;right:0;transform:translateX(50%)}
+.blk.xs b,.blk.xs small,.blk.nosub small{display:none}
+.axis{position:relative;height:52px;margin-top:3px;border-top:2px solid #1f2937}
+.axis .mt{position:absolute;top:0;width:1px;height:6px;background:#94a3b8}
+.axis .tk{position:absolute;top:0;width:0}
+.axis .tk i{position:absolute;left:-1px;top:0;width:2px;height:13px;background:#1f2937}
+.axis .tk em{position:absolute;top:14px;left:0;transform:translateX(-50%);font-style:normal;font-weight:700;font-size:.82rem;color:#172033;white-space:nowrap}
+.axis .tk.hide em{visibility:hidden}
+.axis .unit{position:absolute;right:0;top:34px;font-size:.72rem;color:#64748b}
+.gcap{margin-top:2px;font-size:.88rem}
+.gcap .lg{margin-left:6px}
+.gcap .pb{min-width:0;padding:0 7px;font-size:.75rem}
+
+/* definition boxes (coloured by kind) */
+.defs{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px;margin:8px 0 16px}
+.def,.chip{--c:#64748b;--bg:#f1f5f9}
+.k-metric{--c:#7c3aed;--bg:#f5f0ff}.k-concept{--c:#15803d;--bg:#ecf9f0}.k-problem{--c:#dc2626;--bg:#fef2f2}.k-fix{--c:#0e7490;--bg:#ecfeff}
+.def{border:1px solid var(--c);border-left-width:6px;background:var(--bg);border-radius:8px;padding:9px 12px;font-size:.93rem}
+.def .dt{font-weight:700;color:var(--c);margin-bottom:2px}
+.def small{display:block;margin-top:4px;color:#64748b;font-size:.75rem}
+.chip{display:inline-block;padding:1px 10px;border-radius:12px;border:1px solid var(--c);background:var(--bg);color:var(--c);font-weight:600;font-size:.78rem}
+.callout.rule{border-color:#4f46e5;background:#eef2ff}
+.callout.def-how{border-color:#0e7490;background:#ecfeff}
 
 /* step-by-step trace */
 .trace li{padding:4px 8px;border-radius:6px}
 .trace li.cur{background:#fff8e7;border:1px solid #f3d68a}
 .table td,.table th{white-space:nowrap}
-@media(max-width:600px){.hero h1{font-size:1.4rem}.gantt{margin-left:10px;margin-right:10px}.blk b{font-size:.75rem}.blk small{display:none}.t{font-size:.65rem}}
+@media(max-width:600px){.hero h1{font-size:1.4rem}.gc{margin-left:18px;margin-right:22px}.blk b{font-size:.75rem}.axis .tk em{font-size:.7rem}.defs{grid-template-columns:1fr}}
