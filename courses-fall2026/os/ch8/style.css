@@ -90,3 +90,14 @@ h6{margin:16px 0 6px;font-weight:700;color:#334155}
 .mx{margin-bottom:0;width:auto}.mx th,.mx td{padding:2px 9px}.mx tbody th{background:#f8fafc;font-size:.85rem}
 tr.hi>td,tr.hi>th{background:#fff8e7!important}
 .vec{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.05rem;font-weight:700;border:2px solid #172033;border-radius:8px;padding:4px 10px;display:inline-block;background:#fff}
+.rag-it{font-style:italic;font-size:15px;fill:#172033;pointer-events:none;user-select:none}.rag-sub{font-size:10px;font-style:italic}
+.formula{background:#f1f5f9;border:1px solid #d9e0e8;border-left:5px solid #4f46e5;border-radius:8px;padding:8px 14px;margin:8px 0;font-family:Georgia,'Times New Roman',serif;font-size:1.05rem;overflow-x:auto}
+.vec.dim{color:#94a3b8;border-color:#cbd5e1}
+tr.dn>td,tr.dn>th{opacity:.45;text-decoration:line-through}
+.fin{display:inline-block;padding:0 8px;margin:1px;border:1px solid #cbd5e1;border-radius:10px;font-size:.8rem;color:#64748b;background:#fff}.fin.on{border-color:#15803d;color:#15803d;background:#ecf9f0;font-weight:700}
+.seqb{font-weight:700;font-family:ui-monospace,Menlo,Consolas,monospace}
+.trace-box{max-height:260px;overflow:auto;border:1px solid #e2e8f0;border-radius:8px;padding:6px 8px;background:#fff}
+.chain{display:flex;flex-wrap:wrap;align-items:center;gap:2px 4px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92rem;margin:6px 0 10px}
+.chain .arr{display:inline-flex;flex-direction:column;align-items:center;font-size:.8rem;color:#334155;margin:0 4px;line-height:1}.chain .arr i{font-style:normal;font-weight:700}
+.chain .tick{color:#15803d;font-size:1.3rem;margin-left:6px}.chain .stop{margin-left:6px;font-size:1.2rem}
+.rag-tag{font-size:12px;font-weight:700;fill:#4f46e5}

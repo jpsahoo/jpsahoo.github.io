@@ -4,7 +4,7 @@ Same layout, light theme and teaching style as the *CPU Scheduling* notes (Chapt
 **📖 Lecture notes · 🧪 Examples · ✏️ Practice + solution**.
 
 ## Run
-Open `index.html` in a browser (works from `file://`; needs internet once for the Bootstrap, MathJax and D3 CDNs).
+Open `index.html` in a browser (works from `file://`; needs internet once for the Bootstrap and D3 CDNs).
 For GitHub Pages: push the folder and enable Pages — no build step.
 
 ## Files
@@ -24,5 +24,8 @@ Avoidance (safe state, claim edges, Banker’s algorithm, request algorithm) · 
 * Graph layout is a live D3 force simulation (node repulsion + edge springs — the JavaScript counterpart of NetworkX’s spring layout); **drag nodes** to rearrange.
   Edges on a cycle turn red; deadlocked processes get a red outline; “what-if” buttons add the request that closes a cycle.
 * Every verdict (safe / unsafe, deadlock / none, grant / deny) is **computed**, not typed in, so editing `data.js` keeps answers consistent.
-* Sources: Silberschatz, Galvin & Gagne, *Operating System Concepts* (10th ed.), Ch. 8, and the lecture slides *Deadlocks – Ch. 8* (slide numbers cited as 8.x).
-  The slide-8.41 detection example has a Resource row that does not match its Allocation column; the page recomputes it and says so.
+* Sources: Silberschatz, Galvin & Gagne, *Operating System Concepts* (10th ed.), Chapter 8 (textbook page numbers in the Overview), and the lecture slides *Deadlocks – Ch. 8* (figures reproduced; slide numbers are not quoted).
+  The lecture’s detection example has a Resource row that does not match its Allocation column; the page recomputes it and says so.
+* No LaTeX / MathJax: formulas are plain HTML, so nothing can render as raw `\[ … \]`.
+* Figures use the textbook layout (blue circles = processes, grey rectangles = resource types, ● = instance). **🔀 Force layout** switches to a D3 force simulation.
+* Simulators (Banker’s safety / request algorithm, detection, graph reduction, claim-edge life-cycle) advance **one calculation per click**: ◀ Prev · Next ▶ · ⏩ Next pick · All ⏭.
