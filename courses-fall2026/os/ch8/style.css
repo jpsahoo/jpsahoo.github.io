@@ -101,3 +101,4 @@ tr.dn>td,tr.dn>th{opacity:.45;text-decoration:line-through}
 .chain .arr{display:inline-flex;flex-direction:column;align-items:center;font-size:.8rem;color:#334155;margin:0 4px;line-height:1}.chain .arr i{font-style:normal;font-weight:700}
 .chain .tick{color:#15803d;font-size:1.3rem;margin-left:6px}.chain .stop{margin-left:6px;font-size:1.2rem}
 .rag-tag{font-size:12px;font-weight:700;fill:#4f46e5}
+.fig-cap{font-weight:700;font-size:.9rem;color:#334155;margin:4px 0 2px;text-align:center}

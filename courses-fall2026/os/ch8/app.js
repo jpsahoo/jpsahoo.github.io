@@ -102,26 +102,27 @@ const goms=(id,d)=>{const m=MS[id];if(d=='pick'){let j=m.up+1;while(j<m.fr.lengt
 
 /* ---------- 4. Graph steppers (reduction, claim-edge life-cycle) ---------- */
 const newRS=fr=>{const id=MC++;RS[id]={fr,up:0};return id};
-const paintRs=id=>{const m=RS[id],f=m.fr[m.up],H=$('#rs'+id);H.innerHTML=`<div class="rag-host" id="rsg${id}"></div><div id="rsl${id}"></div><div id="rsm${id}"></div>`;
-  drawRAG($('#rsg'+id),f.G,{claim:f.claim,mark:f.claim?true:!!f.final});$('#rsl'+id).innerHTML=ragLegend(f.G);
+const paintRs=id=>{const m=RS[id],f=m.fr[m.up],H=$('#rs'+id);H.innerHTML=`<div class="row g-2"><div class="col-lg-${f.G2?7:12}">${f.G2?'<div class="fig-cap">(a) Resource-Allocation Graph</div>':''}<div class="rag-host" id="rsg${id}"></div></div>${f.G2?`<div class="col-lg-5"><div class="fig-cap">(b) Corresponding wait-for graph</div><div class="rag-host" id="rsh${id}"></div></div>`:''}</div><div id="rsl${id}"></div><div id="rsm${id}"></div>`;
+  drawRAG($('#rsg'+id),f.G,{claim:f.claim,mark:f.claim?true:!!f.final});if(f.G2)drawRAG($('#rsh'+id),f.G2,{h:300,mark:!!f.final});$('#rsl'+id).innerHTML=ragLegend(f.G);
   let h=alert(f.cls||'info',f.msg);if(f.claim){const v=ragVerdict(f.G,{claim:true});h+=alert(v.cls,v.html)}$('#rsm'+id).innerHTML=h;$('#rsc'+id).textContent=`Step ${m.up} of ${m.fr.length-1}`};
 const gors=(id,d)=>{const m=RS[id];if(d=='pick'){let j=m.up+1;while(j<m.fr.length-1&&m.fr[j].cls!='success'&&!m.fr[j].claim)j++;m.up=Math.min(j,m.fr.length-1)}else m.up=Math.max(0,Math.min(m.fr.length-1,m.up+d));paintRs(id)};
 
 /* ---------- 5. Example cards ---------- */
 const hdr=(e)=>`<div class="d-flex flex-wrap gap-2 align-items-center"><h5 class="m-0">${e.t}</h5>${e.s?`<span class="badge text-bg-primary">${e.s}</span>`:''}</div>`;
 const ragBlock=(k,e)=>{GR[k]={G:e.G,claim:e.claim,then:e.then,wfg:e.wfg,on:false,force:false};
-  return`<div class="swim-wrap"><div id="rg${k}" class="rag-host"></div><div id="rl${k}"></div>
+  return`<div class="swim-wrap">${e.wfg?'<div class="fig-cap">(a) Resource-Allocation Graph</div>':''}<div id="rg${k}" class="rag-host"></div><div id="rl${k}"></div>
   <div class="d-flex flex-wrap gap-2 mb-2">${e.then&&e.then.label?`<button class="btn btn-sm btn-dark" id="rb${k}" onclick="ragToggle(${k})">${e.then.label}</button>`:''}${e.G.pos?`<button class="btn btn-sm btn-outline-secondary" id="rf${k}" onclick="ragForce(${k})">🔀 Force layout</button>`:''}</div>
-  <div id="rv${k}"></div>${e.wfg?`<h6>Wait-for graph (resource nodes collapsed)</h6><div id="rw${k}" class="rag-host"></div><div id="rwv${k}"></div>`:''}</div>`};
+  <div id="rv${k}"></div>${e.wfg?`<div class="fig-cap mt-2">(b) Corresponding wait-for graph (resource nodes removed)</div><div id="rw${k}" class="rag-host"></div><div id="rwv${k}"></div>`:''}</div>`};
 const ragDraw=k=>{const g=GR[k],G=g.on?applyDelta(g.G,g.then.d||g.then):g.G,H=$('#rg'+k);H.innerHTML='';drawRAG(H,G,{claim:g.claim,force:g.force});
   $('#rl'+k).innerHTML=ragLegend(G);const rv=$('#rv'+k);if(rv){const v=ragVerdict(G,{claim:g.claim});rv.innerHTML=alert(v.cls,v.html)}
-  if(g.wfg&&$('#rw'+k)){const W=wfgOf(G),h2=$('#rw'+k);h2.innerHTML='';drawRAG(h2,W,{h:260});const v2=ragVerdict(W);$('#rwv'+k).innerHTML=alert(v2.cls,v2.html)}},
+  if(g.wfg&&$('#rw'+k)){const W=wfgOf(G),h2=$('#rw'+k);h2.innerHTML='';drawRAG(h2,W,{h:300});const v2=ragVerdict(W);$('#rwv'+k).innerHTML=alert(v2.cls,v2.html)}},
 ragToggle=k=>{GR[k].on=!GR[k].on;const b=$('#rb'+k);b.classList.toggle('btn-dark',!GR[k].on);b.classList.toggle('btn-outline-dark',GR[k].on);ragDraw(k)},
 ragForce=k=>{GR[k].force=!GR[k].force;$('#rf'+k).textContent=GR[k].force?'📐 Textbook layout':'🔀 Force layout';ragDraw(k)};
 
 const exCard=(e,k)=>{const body={
  rag:()=>ragBlock(k,e)+(e.reduce?`<h6>Graph reduction, one step at a time</h6>${ctl('rs',newRS(reduceFrames(e.G)))}`:''),
  ragsteps:()=>ctl('rs',newRS(e.stages.map(s=>({...s,claim:true})))),
+ wfgsteps:()=>`${ctl('rs',newRS(wfgFrames(e.G)))}`,
  code:()=>`<div class="row g-2">${e.code.map(([n,c])=>`<div class="col-md-${e.code.length>1?6:12}"><div class="codebox"><div class="codehd">${n}</div><pre>${esc(c)}</pre></div></div>`).join('')}</div>
    ${e.tl?`<h6>One bad interleaving</h6>${tbl(['Step','Thread','Action','Result'],e.tl)}`:''}${e.G?`<h6>Resulting resource-allocation graph</h6>${ragBlock(k,e)}`:call('warn','⚠️ No cycle of waiting exists here: the threads are <b>running</b>, not blocked — that is what separates livelock from deadlock.')}`,
  order:()=>{const R=orderCheck(e.F,e.threads);return`<p class="mb-1"><b>Ordering F:</b> ${Object.entries(e.F).map(([a,b])=>`F(${a}) = ${b}`).join(', ')}</p>${e.G?ragBlock(k,e):''}${tbl(['Thread','Acquisition order','F values','Verdict'],R.map(r=>[`<b>${r.n}</b>`,r.seq.join(' → '),r.seq.map(x=>e.F[x]).join(' → '),r.bad?`<span class="text-danger fw-bold">✘ asks for ${r.bad[1]} (F=${e.F[r.bad[1]]}) while holding ${r.bad[0]} (F=${e.F[r.bad[0]]})</span>`:'<span class="text-success fw-bold">✔ increasing</span>']))}

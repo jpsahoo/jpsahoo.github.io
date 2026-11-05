@@ -9,7 +9,7 @@ const edgesOf=G=>KEYS.flatMap(k=>(G[k]||[]).map(e=>({s:e[0],t:e[1],type:k})));
 // delta = {req:[..],asg:[..],claim:[..], rm:{claim:[..]}} → new graph (used by the "what if…" buttons)
 const applyDelta=(G,d)=>{if(!d)return G;const o={...G};KEYS.forEach(k=>{const rm=(d.rm&&d.rm[k])||[];o[k]=[...(G[k]||[]).filter(e=>!rm.some(r=>r[0]==e[0]&&r[1]==e[1])),...(d[k]||[])]});return o};
 // wait-for graph: Pi → Pj when Pi requests a resource currently assigned to Pj
-const wfgOf=G=>{const w=[];(G.req||[]).forEach(([p,r])=>(G.asg||[]).forEach(([r2,q])=>{if(r==r2&&p!=q&&!w.some(x=>x[0]==p&&x[1]==q))w.push([p,q])}));return{P:G.P,R:[],wait:w}};
+const wfgOf=G=>{const w=[];(G.req||[]).forEach(([p,r])=>(G.asg||[]).forEach(([r2,q])=>{if(r==r2&&p!=q&&!w.some(x=>x[0]==p&&x[1]==q))w.push([p,q])}));return{P:G.P,R:[],wait:w,pos:G.wpos}};
 
 // analyse: strongly-connected components (cycles) + graph reduction (the detection algorithm drawn on the graph)
 const analyse=(G,o={})=>{
@@ -68,7 +68,7 @@ const drawRAG=(host,G,o={})=>{
         dead=new Set(mark?(G.wait?A.inCycle:A.dead):[]);
   const nodes=[...G.P.map(n=>({id:n,t:'P'})),...G.R.map(r=>({id:r.n,t:'R',w:r.w||1}))];
   nodes.forEach((d,i)=>{
-    if(d.t=='R'){d.bw=d.w>1?58:66;d.bh=d.w>1?24*d.w+16:42;d.dots=Array.from({length:d.w},(_,j)=>({x:0,y:d.w>1?(j-(d.w-1)/2)*24:0}))}
+    if(d.t=='R'){d.bw=d.w>1?58:66;d.bh=d.w>1?24*d.w+16:42;d.dots=G.nodots?[]:Array.from({length:d.w},(_,j)=>({x:0,y:d.w>1?(j-(d.w-1)/2)*24:0}))}
     if(fixed&&G.pos[d.id]){d.x=G.pos[d.id][0]*W;d.y=G.pos[d.id][1]*H}else{const a=i/nodes.length*2*Math.PI;d.x=W/2+130*Math.cos(a);d.y=H/2+95*Math.sin(a)}});
   const used={},L=edgesOf(G).map(e=>{const l={source:e.s,target:e.t,type:e.type,bad:mark&&A.isBad(e)};if(e.type=='asg'){used[e.s]=used[e.s]||0;l.di=used[e.s]++}return l});
   L.forEach(l=>l.pair=L.some(m=>m!==l&&m.source==l.target&&m.target==l.source));
@@ -87,10 +87,11 @@ const drawRAG=(host,G,o={})=>{
   node.filter(d=>d.t=='R').each(function(d){const g=d3.select(this),top=!fixed||d.y<H*.5;
     g.append('rect').attr('x',-d.bw/2).attr('y',-d.bh/2).attr('width',d.bw).attr('height',d.bh).attr('fill','#d1d5db').attr('stroke',RC.ink).attr('stroke-width',1.6);
     d.dots.forEach(p=>g.append('circle').attr('r',4.5).attr('cx',p.x).attr('cy',p.y).attr('fill',RC.ink));
-    nameText(g,d.id,'rag-it').attr('y',top?-d.bh/2-8:d.bh/2+19);
-    if(G.tag&&G.tag[d.id])g.append('text').attr('text-anchor','middle').attr('class','rag-tag').attr('y',top?-d.bh/2-24:d.bh/2+34).text(G.tag[d.id])});
+    const lb=(G.lab&&G.lab[d.id])||(top?'t':'b'),tx=nameText(g,d.id,'rag-it');
+    if(lb=='r')tx.attr('text-anchor','start').attr('x',d.bw/2+8).attr('y',5);else tx.attr('y',lb=='t'?-d.bh/2-8:d.bh/2+19);
+    if(G.tag&&G.tag[d.id])g.append('text').attr('text-anchor','middle').attr('class','rag-tag').attr('y',(G.lab&&G.lab[d.id]=='r')?22:(top?-d.bh/2-24:d.bh/2+34)).attr('x',(G.lab&&G.lab[d.id]=='r')?d.bw/2+8:0).attr('text-anchor',(G.lab&&G.lab[d.id]=='r')?'start':'middle').text(G.tag[d.id])});
   const place=()=>{nodes.forEach(d=>{d.x=Math.max(46,Math.min(W-46,d.x));d.y=Math.max(40,Math.min(H-40,d.y))});
-    link.attr('d',d=>{const a=d.source,b=d.target,S0=d.type=='asg'?[a.x+a.dots[d.di%a.w].x,a.y+a.dots[d.di%a.w].y]:null,sx=S0?S0[0]:a.x,sy=S0?S0[1]:a.y,
+    link.attr('d',d=>{const a=d.source,b=d.target,S0=(d.type=='asg'&&a.dots&&a.dots.length)?[a.x+a.dots[d.di%a.w].x,a.y+a.dots[d.di%a.w].y]:null,sx=S0?S0[0]:a.x,sy=S0?S0[1]:a.y,
       dx=b.x-sx,dy=b.y-sy,l=Math.hypot(dx,dy)||1,k=d.pair?30:0,cx=(sx+b.x)/2-dy/l*k,cy=(sy+b.y)/2+dx/l*k;
       let p0=S0;if(!p0){const u=[cx-a.x,cy-a.y],n=Math.hypot(...u)||1,r=rad(a,u[0]/n,u[1]/n);p0=[a.x+u[0]/n*r,a.y+u[1]/n*r]}
       const u2=[cx-b.x,cy-b.y],n2=Math.hypot(...u2)||1,r2=rad(b,u2[0]/n2,u2[1]/n2)+2,p1=[b.x+u2[0]/n2*r2,b.y+u2[1]/n2*r2];
@@ -101,4 +102,13 @@ const drawRAG=(host,G,o={})=>{
   return svg.node()};
 const ragLegend=G=>`<div class="rag-leg small"><span><svg width="24" height="22"><circle cx="12" cy="11" r="9" fill="#cfe8f7" stroke="#5b9bd5" stroke-width="1.8"/></svg> process</span>${G.R.length?`<span><svg width="30" height="22"><rect x="2" y="3" width="26" height="16" fill="#d1d5db" stroke="#1f2937" stroke-width="1.6"/><circle cx="15" cy="11" r="3.5" fill="#1f2937"/></svg> resource type (● = one instance)</span>`:''}
   ${G.wait?'<span>→ Pᵢ waits for Pⱼ</span>':'<span>Pᵢ → Rⱼ <b>request</b> (arrow enters the rectangle)</span><span>Rⱼ → Pᵢ <b>assignment</b> (arrow leaves an instance ●)</span>'}${(G.claim||[]).length?'<span>┄► <b>claim</b> edge (dashed)</span>':''}<span class="lg-bad">━▶ red = cycle</span><span class="text-muted">· drag nodes to rearrange</span></div>`;
-if(typeof module!='undefined')module.exports={analyse,ragVerdict,wfgOf,applyDelta,edgesOf,drawRAG,reduceFrames};
+
+/* ---------- wait-for graph built one edge at a time: frames show the RAG (a) and the wait-for graph (b) growing ---------- */
+const wfgFrames=G=>{const w=[],fr=[],mk=()=>({P:G.P,R:[],wait:w.map(x=>[...x]),pos:G.wpos});
+  fr.push({G,G2:mk(),msg:'<b>Start.</b> Left: the resource-allocation graph (a). Right: an empty wait-for graph (b) — its nodes are only the processes. <b>Rule:</b> P<sub>i</sub> → P<sub>j</sub> if P<sub>i</sub> is waiting for P<sub>j</sub>, i.e. P<sub>i</sub> requests a resource that P<sub>j</sub> currently holds. Go through the request edges one by one.',cls:'info'});
+  (G.req||[]).forEach(([p,r])=>{const hs=(G.asg||[]).filter(e=>e[0]==r).map(e=>e[1]),nw=hs.filter(q=>q!=p&&!w.some(x=>x[0]==p&&x[1]==q));nw.forEach(q=>w.push([p,q]));
+    fr.push({G,G2:mk(),msg:`Request edge <b>${p} → ${r}</b>; ${r} is held by ${hs.length?hs.join(', '):'nobody'}. ${hs.length?`So ${p} waits for ${hs.join(', ')} ⇒ add wait-for edge <b>${nw.map(q=>p+' → '+q).join(', ')||'(already present)'}</b>.`:`${r} is free ⇒ no wait-for edge.`}`,cls:'success'})});
+  const v=ragVerdict(mk()),n=G.P.length+G.R.length;
+  fr.push({G,G2:mk(),final:true,cls:v.cls,msg:`<b>Search for a cycle</b> in the wait-for graph (nodes = processes): ${v.html}<br><span class="small">A cycle-detection algorithm needs an order of <b>n²</b> operations, where n is the number of vertices in the graph (here ${G.P.length} in the wait-for graph; ${n} in the RAG).</span>`});
+  return fr};
+if(typeof module!='undefined')module.exports={wfgFrames,analyse,ragVerdict,wfgOf,applyDelta,edgesOf,drawRAG,reduceFrames};
