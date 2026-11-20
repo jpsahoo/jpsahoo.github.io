@@ -4,343 +4,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#f8fafc">
-
-    <title>Jyoti Prakash Sahoo, Ph.D. | Quantum AI</title>
-
-    <meta name="description"
-          content="Personal academic and research website of Jyoti Prakash Sahoo, Ph.D.">
-
-    <link rel="canonical" href="https://jpsahoo.pages.dev/">
+    <title>Jyoti Prakash Sahoo | Quantum AI</title>
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
+            margin: 0;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 30px 15px;
-            overflow-x: hidden;
-            background:
-                radial-gradient(circle at 15% 20%, #dbeafe, transparent 35%),
-                radial-gradient(circle at 85% 80%, #ede9fe, transparent 35%),
-                linear-gradient(135deg, #f8fbff, #eef5ff);
+            background: #f0f6ff;
+            font-family: Arial, sans-serif;
+            text-align: center;
             color: #172554;
-            font-family: "Inter", "Segoe UI", Arial, sans-serif;
         }
 
         .container {
-            width: 100%;
-            max-width: 620px;
-            padding: 45px 40px;
-            text-align: center;
-            background: rgba(255,255,255,.85);
-            border: 1px solid rgba(191,219,254,.8);
-            border-radius: 22px;
-            box-shadow: 0 20px 60px rgba(30,64,175,.09);
-            backdrop-filter: blur(12px);
+            padding: 40px;
         }
 
-        .logo {
-            width: 70px;
-            height: 70px;
-            margin: 0 auto 22px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 18px;
-            background: linear-gradient(135deg,#2563eb,#4f46e5);
-            color: white;
-            font-size: 26px;
-            font-weight: 700;
-            box-shadow: 0 8px 25px rgba(37,99,235,.25);
-        }
-
-        h1 {
-            font-family: Georgia, serif;
-            font-size: clamp(23px, 5vw, 31px);
-            color: #172554;
-            margin-bottom: 13px;
-            letter-spacing: -.5px;
-        }
-
-        .subtitle {
-            color: #1d4ed8;
-            font-size: 14px;
-            font-weight: 600;
-            line-height: 1.8;
-            margin-bottom: 32px;
-        }
-
-        /* QUANTUM LOADER */
-
-        .quantum-loader {
-            width: 145px;
-            height: 145px;
+        .quantum {
+            width: 110px;
+            height: 110px;
+            margin: 35px auto;
             position: relative;
-            margin: 0 auto 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: grid;
+            place-items: center;
         }
 
-        .quantum-core {
-            width: 48px;
-            height: 48px;
+        .core {
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
-            background: radial-gradient(
-                circle,
-                #ffffff 5%,
-                #7dd3fc 30%,
-                #2563eb 75%
-            );
-            box-shadow:
-                0 0 15px #38bdf8,
-                0 0 35px #2563eb,
-                0 0 65px rgba(37,99,235,.5);
-            animation: quantumPulse 1.8s ease-in-out infinite;
-            z-index: 2;
+            background: #2563eb;
+            box-shadow: 0 0 30px #38bdf8;
+            animation: pulse 1.5s infinite;
         }
 
-        .quantum-orbit {
+        .orbit {
             position: absolute;
-            width: 130px;
-            height: 52px;
-            border: 2px solid rgba(37,99,235,.7);
+            width: 105px;
+            height: 40px;
+            border: 2px solid #60a5fa;
             border-radius: 50%;
-            animation: quantumRotate 3s linear infinite;
+            animation: rotate 3s linear infinite;
         }
 
-        .quantum-orbit:nth-child(3) {
-            border-color: rgba(56,189,248,.8);
-            animation-duration: 3.5s;
-        }
-
-        .quantum-orbit:nth-child(4) {
-            border-color: rgba(139,92,246,.75);
+        .orbit:nth-child(3) {
             animation-duration: 4s;
+            border-color: #a78bfa;
         }
 
-        .quantum-orbit::after {
-            content: "";
-            position: absolute;
-            width: 9px;
-            height: 9px;
-            top: -5px;
-            left: 50%;
-            border-radius: 50%;
-            background: #38bdf8;
-            box-shadow: 0 0 12px #38bdf8;
-        }
-
-        .quantum-particle {
-            position: absolute;
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #60a5fa;
-            box-shadow: 0 0 12px #2563eb;
-            animation: quantumFloat 2s ease-in-out infinite alternate;
-        }
-
-        .quantum-particle:nth-child(5) {
-            top: 10px;
-            right: 15px;
-            animation-delay: .5s;
-        }
-
-        .quantum-particle:nth-child(6) {
-            bottom: 10px;
-            left: 15px;
-            animation-delay: 1s;
-        }
-
-        @keyframes quantumRotate {
-            from { transform: rotate(0deg); }
+        @keyframes rotate {
             to { transform: rotate(360deg); }
         }
 
-        @keyframes quantumPulse {
-            0%,100% {
-                transform: scale(.85);
-                opacity: .8;
-            }
-            50% {
-                transform: scale(1.15);
-                opacity: 1;
-            }
+        @keyframes pulse {
+            50% { transform: scale(1.3); }
         }
 
-        @keyframes quantumFloat {
-            from {
-                transform: translateY(-8px);
-                opacity: .4;
-            }
-            to {
-                transform: translateY(8px);
-                opacity: 1;
-            }
+        h1 {
+            font-size: 27px;
         }
 
-        /* LOADING TEXT */
-
-        .loading-text {
-            font-size: 19px;
-            font-weight: 700;
-            color: #172554;
-            margin-bottom: 10px;
-        }
-
-        .description {
-            font-size: 14px;
+        p {
             color: #64748b;
-            line-height: 1.8;
-        }
-
-        /* QUANTUM PROGRESS BAR */
-
-        .progress-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 25px 0;
-        }
-
-        .quantum-progress {
-            flex: 1;
-            height: 7px;
-            background: #dbeafe;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .quantum-progress-bar {
-            width: 35%;
-            height: 100%;
-            border-radius: 20px;
-            background: linear-gradient(
-                90deg,
-                #2563eb,
-                #38bdf8,
-                #8b5cf6
-            );
-            animation: quantumProgress 2s ease-in-out infinite;
-        }
-
-        @keyframes quantumProgress {
-            0% { transform: translateX(-110%); }
-            100% { transform: translateX(350%); }
-        }
-
-        .progress-label {
-            font-size: 13px;
-            color: #2563eb;
-            font-weight: 700;
-        }
-
-        /* CONNECTION INFORMATION */
-
-        .connection {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 9px;
-            margin: 25px 0;
-            font-size: 13px;
-            color: #475569;
-            flex-wrap: wrap;
-        }
-
-        .connection-icon {
-            font-size: 23px;
-            color: #2563eb;
-        }
-
-        .connection a {
-            color: #2563eb;
-            font-weight: 600;
-            text-decoration: none;
-        }
-
-        /* FALLBACK */
-
-        #fallback {
-            display: none;
-            margin-top: 28px;
-            padding: 22px;
-            border: 1px solid #bfdbfe;
-            border-radius: 14px;
-            background: rgba(239,246,255,.75);
-        }
-
-        #fallback p {
-            font-size: 13px;
-            color: #475569;
             line-height: 1.7;
-            margin-bottom: 17px;
         }
 
-        .button {
-            display: inline-block;
-            padding: 13px 27px;
-            background: linear-gradient(135deg,#2563eb,#1d4ed8);
-            color: white;
-            border-radius: 9px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            box-shadow: 0 5px 15px rgba(37,99,235,.2);
-            transition: .2s ease;
-        }
-
-        .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(37,99,235,.3);
-        }
-
-        /* FOOTER */
-
-        .footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-            font-size: 11px;
-            color: #94a3b8;
-            line-height: 1.9;
-        }
-
-        .footer strong {
-            color: #64748b;
-        }
-
-        @media(max-width:480px) {
-            .container {
-                padding: 35px 22px;
-            }
-
-            .quantum-loader {
-                transform: scale(.9);
-            }
-
-            .loading-text {
-                font-size: 17px;
-            }
-        }
-
-        @media(prefers-reduced-motion:reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: .01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: .01ms !important;
-            }
+        a {
+            color: #2563eb;
         }
     </style>
 </head>
@@ -349,167 +82,39 @@
 
 <div class="container">
 
-    <!-- PERSONAL IDENTITY -->
+   
 
-    <div class="logo">JP</div>
+  
 
-    <h1>Jyoti Prakash Sahoo, Ph.D.</h1>
-
-    <p class="subtitle">
-        Quantum AI · Federated Learning · Cybersecurity
-    </p>
-
-    <!-- QUANTUM ANIMATION -->
-
-    <div class="quantum-loader" id="spinner">
-
-        <div class="quantum-core"></div>
-
-        <div class="quantum-orbit"></div>
-        <div class="quantum-orbit"></div>
-        <div class="quantum-orbit"></div>
-
-        <div class="quantum-particle"></div>
-        <div class="quantum-particle"></div>
-
+    <div class="quantum">
+        <div class="core"></div>
+        <div class="orbit"></div>
+        <div class="orbit"></div>
     </div>
 
-    <!-- LOADING STATUS -->
+     
 
-    <div class="loading-text" id="loadingText">
-        Initializing Quantum Connection...
-    </div>
+     
 
-    <p class="description" id="description">
-        Preparing your experience and connecting to the main website.
-        Please wait a moment.
-    </p>
-
-    <!-- PROGRESS -->
-
-    <div class="progress-wrapper" id="progressContainer">
-
-        <div class="quantum-progress">
-            <div class="quantum-progress-bar"></div>
-        </div>
-
-        <span class="progress-label">Qubit</span>
-
-    </div>
-
-    <!-- CONNECTION ADDRESS -->
-
-    <div class="connection">
-
-        <span class="connection-icon">⚛</span>
-
-        <span>
-            Connecting to
-            <a href="https://jpsahoo.pages.dev/">
-                jpsahoo.pages.dev
-            </a>
-        </span>
-
-    </div>
-
-    <!-- FALLBACK -->
-
-    <div id="fallback">
-
-        <p>
-            Automatic redirection could not be completed.
-            Please click below to access the main website.
-        </p>
-
-        <a class="button"
-           href="https://jpsahoo.pages.dev/"
-           target="_blank"
-           rel="noopener noreferrer">
-            ↗ &nbsp; Visit Main Website →
-        </a>
-
-    </div>
-
-    <!-- FOOTER -->
-
-    <div class="footer">
-
-        <strong>© 2026 Jyoti Prakash Sahoo.</strong>
-        All rights reserved.
-
-        <br>
-
-        Powered by GitHub Pages and Cloudflare Pages.
-
-    </div>
-
+    
 </div>
 
-<!-- REDIRECTION SCRIPT -->
 
 <script>
-(function () {
-
-    "use strict";
-
-    const destination = "https://jpsahoo.pages.dev/";
-    const redirectDelay = 5000;
-
-    // Attempt automatic redirection
-    try {
-        window.location.replace(destination);
-    } catch (error) {
-        showFallback();
-        return;
+    function openWebsite() {
+        window.open(
+            "https://jpsahoo.pages.dev/",
+            "_blank"
+        );
     }
 
-    // Display fallback if the browser remains on this page
-    setTimeout(showFallback, redirectDelay);
-
-    function showFallback() {
-
-        const spinner = document.getElementById("spinner");
-        const progress = document.getElementById("progressContainer");
-        const loadingText = document.getElementById("loadingText");
-        const description = document.getElementById("description");
-        const fallback = document.getElementById("fallback");
-
-        if (spinner) {
-            spinner.style.display = "none";
-        }
-
-        if (progress) {
-            progress.style.display = "none";
-        }
-
-        if (loadingText) {
-            loadingText.textContent =
-                "Redirection taking longer than expected";
-        }
-
-        if (description) {
-            description.textContent =
-                "Your browser may have prevented automatic navigation. You can continue using the button below.";
-        }
-
-        if (fallback) {
-            fallback.style.display = "block";
-        }
-    }
-
-})();
+    // Show quantum loader for 2 seconds, then redirect
+    window.addEventListener("load", function () {
+        setTimeout(function () {
+            window.location.href = "https://jpsahoo.pages.dev/";
+        }, 2000);
+    });
 </script>
-
-<noscript>
-    <meta http-equiv="refresh"
-          content="0;url=https://jpsahoo.pages.dev/">
-
-    <p>
-        <a href="https://jpsahoo.pages.dev/">
-            Visit the main website
-        </a>
-    </p>
-</noscript>
 
 </body>
 </html>
