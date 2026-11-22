@@ -13,3 +13,5 @@ Optional local server: `python -m http.server` → http://localhost:8000
 2. Settings → Pages → Source: *Deploy from a branch* → branch `main`, folder `/ (root)` → Save.
 3. Open `https://<your-user>.github.io/<repo>/` after about a minute.
 File names are case-sensitive on GitHub Pages — do not rename them.
+
+If you find this helpful, feel free to send me a note via email. Your encouragement motivates me to share more educational resources. Thank you!
