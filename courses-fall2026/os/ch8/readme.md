@@ -20,3 +20,6 @@ Avoidance (safe state, claim edges, Banker’s algorithm, request algorithm) · 
   The lecture’s detection example has a Resource row that does not match its Allocation column; the page recomputes it and says so.
 * Figures use the textbook layout (blue circles = processes, grey rectangles = resource types, ● = instance). **🔀 Force layout** switches to a D3 force simulation.
 * Simulators (Banker’s safety / request algorithm, detection, graph reduction, claim-edge life-cycle) advance **one calculation per click**: ◀ Prev · Next ▶ · ⏩ Next pick · All ⏭.
+
+
+ If you find this helpful, feel free to send me a thank-you note via email. Your encouragement motivates me to share more educational resources. Thank you!
